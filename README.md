@@ -1,70 +1,53 @@
-# MLE-US-Flights
-To add Git credentials to the terminal in SageMaker Studio Classic, you need to configure Git to use your GitHub credentials. Here are the steps to achieve this:
+### How to download kaggle datasets
+As our datasets are very large, it is very slow to upload them to SageMaker. But you can easily download the kaggle datasets to SageMaker and your local machine with the instructions below.
 
-### Step 1: Generate a Personal Access Token on GitHub
+### Step 1: Install the Kaggle Package
 
-1. **Log in to GitHub**.
-2. **Go to Settings**: Click on your profile icon in the upper-right corner and select "Settings".
-3. **Developer settings**: In the left sidebar, click on "Developer settings".
-4. **Personal access tokens**: Click on "Personal access tokens" and then on "Generate new token".
-5. **Select Scopes**: Give your token a descriptive name and select the scopes or permissions you need (e.g., `repo` for full control of private repositories).
-6. **Generate token**: Click on "Generate token" at the bottom of the page.
-7. **Copy the token**: Make sure to copy the token now as you won’t be able to see it again.
+If you haven't already installed the Kaggle package, you can do so using pip:
 
-### Step 2: Configure Git in SageMaker Studio Classic
+```sh
+pip install kaggle
+```
 
-1. **Open SageMaker Studio Classic**:
-   - Navigate to the AWS Management Console.
-   - Open the SageMaker service and launch SageMaker Studio Classic.
+### Step 2: Get Kaggle API Credentials
 
-2. **Open a Terminal**:
-   - In SageMaker Studio, click on the "File" menu and select "New" > "Terminal".
+1. **Log in to your Kaggle account**.
+2. **Navigate to** `Account` by clicking on your profile picture.
+3. **Scroll down to the API section** and click on `Create New API Token`. This will download a `kaggle.json` file containing your API credentials.
 
-3. **Configure Git with Your Credentials**:
+### Step 3: Configure the Kaggle API Credentials
 
-   **Method 1: Using Git Credential Helper**
-   - Configure Git to use the credential helper:
-     ```bash
-     git config --global credential.helper store
-     ```
-   - When you clone a repository for the first time or perform any Git operation that requires authentication, Git will prompt you to enter your GitHub username and personal access token. Git will then store these credentials for future use.
-   
-   **Method 2: Manually Storing Credentials**
-   - Create or edit the `~/.git-credentials` file:
-     ```bash
-     nano ~/.git-credentials
-     ```
-   - Add the following line to the file, replacing `YOUR_USERNAME` and `YOUR_ACCESS_TOKEN` with your GitHub username and personal access token:
-     ```
-     https://YOUR_USERNAME:YOUR_ACCESS_TOKEN@github.com
-     ```
-   - Save and close the file (`Ctrl + O`, `Enter`, `Ctrl + X`).
-   - Configure Git to use this credentials file:
-     ```bash
-     git config --global credential.helper 'store --file ~/.git-credentials'
-     ```
+Place the `kaggle.json` file in the appropriate location for the Kaggle package to access it. The default location is `~/.kaggle/kaggle.json` on Unix-like systems (Linux, macOS) and `C:\Users\<username>\.kaggle\kaggle.json` on Windows.
 
-### Step 3: Clone the Repository and Use Git
+You can create the necessary directory and move the file using the following commands (adjust the path for your OS):
 
-1. **Clone your GitHub repository**:
-   ```bash
-   git clone https://github.com/YOUR_USERNAME/REPOSITORY_NAME.git
-   ```
+#### Unix-like Systems (Linux, macOS)
 
-2. **Navigate to the cloned repository**:
-   ```bash
-   cd REPOSITORY_NAME
-   ```
+```sh
+mkdir -p ~/.kaggle
+mv /path/to/kaggle.json ~/.kaggle/
+chmod 600 ~/.kaggle/kaggle.json
+```
 
-3. **Perform Git operations**:
-   - You can now perform Git operations like `git pull`, `git push`, `git commit`, etc., without being prompted for your credentials each time.
+#### Windows
 
-### Optional: Verify Git Configuration
+```sh
+mkdir C:\Users\<username>\.kaggle
+move C:\path\to\kaggle.json C:\Users\<username>\.kaggle\
+```
 
-1. **Check Git configuration**:
-   ```bash
-   git config --global --list
-   ```
-   - This command will list your Git configuration settings, including the credential helper configuration.
+### Step 4: Download a Dataset Using the Kaggle API in Python
 
-By following these steps, you will have successfully added your GitHub credentials to the terminal in SageMaker Studio Classic, enabling seamless Git operations.
+Here’s the code of how to download a dataset using the Kaggle API from within a Python script:
+
+```python
+import kaggle
+
+# Define the dataset to download
+dataset = 'bordanova/2023-us-civil-flights-delay-meteo-and-aircraft'
+
+# Download the dataset
+kaggle.api.dataset_download_files(dataset, path='datasets/', unzip=True)
+
+print(f"Dataset '{dataset}' has been downloaded and unzipped.")
+```
